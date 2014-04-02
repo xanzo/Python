@@ -132,7 +132,6 @@ y = np.matrix(cursor.execute('select y from Objects_Train_Y').fetchall())
 
 galaxies = []
 count = 0
-
 while count < len(y):
   if y[count] == 0:
     galaxies.append(x[count])
@@ -142,19 +141,16 @@ avg = (np.mean(galaxies, axis = 0)).T
 
 counter = 0
 sum = np.zeros(shape=(10,10))
-
 while counter < len(galaxies):
   sum = sum + (galaxies[counter] - avg) * (galaxies[counter] - avg).T
   counter = counter + 1
 
-galaxies_avg = sum * 1/len(galaxies)
+galaxies_avg = sum / len(galaxies)
 
 eig = np.linalg.eig(galaxies_avg)
 
 eig_value = eig[0]
 eig_vector = eig[1]
-
-print eig_value
 
 counter2 = 0
 sum2 = np.zeros(shape=(10,10))
@@ -162,7 +158,32 @@ while counter2 < len(galaxies):
   sum2 = sum2 + eig_vector.T * (galaxies[counter2] - avg)
   counter2 = counter2 + 1
 
+print "plot: check picture 1"
 plot.plot(eig_value)
+plot.show()
+
+eig_value_sum = 0
+counter3 = 0
+while counter3 < len(eig_value):
+  eig_value_sum = eig_value_sum + eig_value[counter3]
+  counter3 = counter3 + 1
+
+ninety_procent = eig_value_sum * 0.9
+
+amount = 1
+counter4 = 0
+sum = 0
+while sum < ninety_procent:
+  sum = sum + eig_value[counter4]
+  amount = amount + 1
+  counter4 = counter4 + 1
+
+print ""
+print "amount of components for minimum 90%:", amount
+print ""
+print "scatter plot for the first two components: check picture 2"
+plot.plot([1,2],[eig_value[0],eig_value[1]], 'ro')
+plot.axis([0.5,2.5,200,500])
 plot.show()
 
 # close cursor, connection to database
