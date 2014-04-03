@@ -7,6 +7,7 @@ DBDM Exam 2013 - sqlite example
 import sqlite3 as sql
 import numpy as np
 import matplotlib.pyplot as plot
+from random import randrange as rnd
 
 __author__='Jensen, Casper Radmer'
 __version__='1.0'
@@ -161,20 +162,20 @@ plot.show()
 
 #Finds how many components are necessary to fill 90%
 eig_value_sum = 0
-counter3 = 0
-while counter3 < len(eig_value):
-  eig_value_sum = eig_value_sum + eig_value[counter3]
-  counter3 = counter3 + 1
+counter2 = 0
+while counter2 < len(eig_value):
+  eig_value_sum = eig_value_sum + eig_value[counter2]
+  counter2 = counter2 + 1
 
 ninety_procent = eig_value_sum * 0.9
 
 amount = 1
-counter4 = 0
+counter3 = 0
 sum = 0
 while sum < ninety_procent:
-  sum = sum + eig_value[counter4]
+  sum = sum + eig_value[counter3]
   amount = amount + 1
-  counter4 = counter4 + 1
+  counter3 = counter3 + 1
 
 print ""
 print "amount of components for minimum 90%:", amount
@@ -189,7 +190,25 @@ plot.show()
 print ""
 print "Opgave 2.3"
 #Opgave 2.3
+#Finds the distances between centrum and the galaxes
+centrum1 = galaxies[rnd(0, len(galaxies))]
+centrum2 = galaxies[rnd(0, len(galaxies))]
 
+List_A = []
+List_B = []
+counter = 0
+
+while counter < len(galaxies):
+  dist1 = np.linalg.norm(centrum1 - galaxies[counter])
+  dist2 = np.linalg.norm(centrum2 - galaxies[counter])
+  if dist1 < dist2:
+    List_A.append(galaxies[counter])
+  else:
+    List_B.append(galaxies[counter])
+  counter = counter + 1
+
+print "Length of list A:",len(List_A)
+print "Length of list B:",len(List_B)
 
 # close cursor, connection to database
 cursor.close()
