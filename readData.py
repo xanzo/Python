@@ -8,9 +8,9 @@ import sqlite3 as sql
 import numpy as np
 import matplotlib.pyplot as plot
 
-__author__='Schulz, Albert'
+__author__='Jensen, Casper Radmer'
 __version__='1.0'
-__modified__='20140213'
+__modified__='20140403'
 
 
 # open connection to database, create cursor
@@ -22,6 +22,7 @@ tables = cursor.execute('select y from SSFR_Train_Y').fetchall()
 
 print "Opgave 1.2"
 #opgave 1.2 a
+#Finds the average
 sammenlagt = 0
 avg = 0
 
@@ -29,9 +30,11 @@ for row in tables:
   sammenlagt = sammenlagt + row[0]
 
 avg = sammenlagt / len(tables)
-print avg
+print ""
+print "Average:", avg
 
 #opgave 1.2 b
+#Finds the average, where the average has been subtracted from each row
 sammenlagt = 0
 raekke = 0
 
@@ -39,14 +42,15 @@ for row in tables:
   raekke = (row[0] - avg) * (row[0] - avg)
   sammenlagt = sammenlagt + raekke
 
-print sammenlagt / len(tables)
+print "Average from, (row - average) to each row: ", sammenlagt / len(tables)
 
 print ""
 print "Opgave 1.3.1"
 #Opgave 1.3.1
+#Adding b to x and finds w.T * x + b (five parameters)
 y = np.matrix(cursor.execute('select y from SSFR_Train_Y').fetchall())
 x = np.matrix(cursor.execute('select x1,x2,x3,x4 from SSFR_Train_X').fetchall())
-x = np.insert(x, 4, 1, axis = 1) #indsætter i hvad (x) i hvilken række/søjle (4), hvad der skal indsættet (1) og om række/søjle (axis = 1)
+x = np.insert(x, 4, 1, axis = 1) #indsætter i hvad (x), i hvilken række/søjle (4), hvad der skal indsættet (1), og om række/søjle (axis = 1)
 w = (x.T * x).I * x.T * y
 
 print w
@@ -54,11 +58,12 @@ print w
 print ""
 print "Opgave 1.3.2"
 #Opgave 1.3.2
+#Deletes b from x but keep the five parameters as w and b
 x = np.delete(x, 4, axis = 1)
 w = np.matrix([[-0.79400153],[-1.2229592],[-0.32858475],[-0.78633056]])
 b = -8.14943349
-x1 = np.matrix([[2.0307],[1.1529],[0.4761],[0.3869]])
 
+#Finds the mean-sqared-error for train
 counter = 0
 J = 0
 while counter < len(y):
@@ -70,15 +75,12 @@ print J / len(y)
 print ""
 print "Opgave 1.3.3"
 #Opgave 1.3.3
+#Finds the mean-sqared-error for test
 y = np.matrix(cursor.execute('select y from SSFR_Test_Y').fetchall())
 x = np.matrix(cursor.execute('select x1,x2,x3,x4 from SSFR_Test_X').fetchall())
-x = np.insert(x, 4, 1, axis = 1) #indsætter i hvad (x) i hvilken række/søjle (4), hvad der skal indsættet (1) og om række/søjle (axis = 1)
-w = (x.T * x).I * x.T * y
 
-x = np.delete(x, 4, axis = 1)
 w = np.matrix([[-0.79400153],[-1.2229592],[-0.32858475],[-0.78633056]])
 b = -8.14943349
-x1 = np.matrix([[2.0307],[1.1529],[0.4761],[0.3869]])
 
 counter = 0
 J = 0
@@ -97,6 +99,7 @@ test_y = np.matrix(cursor.execute('select y from Objects_Test_Y').fetchall())
 train_x = np.matrix(cursor.execute('select x0,x1,x2,x3,x4,x5,x6,x7,x8,x9 from Objects_Train_X').fetchall())
 train_y = np.matrix(cursor.execute('select y from Objects_Train_Y').fetchall())
 
+#Making a list of which is galaxies and which is stars
 galaxies_and_stars = []
 counter_test = 0
 counter_train = 0
@@ -114,6 +117,7 @@ while counter_test < len(test_x):
   counter_train = 0
   counter_test = counter_test + 1
 
+#Checks hwo many corrects there are
 corrects = 0
 count = 0
 while count < len(test_y):
@@ -130,6 +134,7 @@ print "Opgave 2.2"
 x = np.matrix(cursor.execute('select x0,x1,x2,x3,x4,x5,x6,x7,x8,x9 from Objects_Train_X').fetchall())
 y = np.matrix(cursor.execute('select y from Objects_Train_Y').fetchall())
 
+#Making a list of all galaxies and finds the average of each column
 galaxies = []
 count = 0
 while count < len(y):
@@ -139,6 +144,7 @@ while count < len(y):
 
 avg = (np.mean(galaxies, axis = 0)).T
 
+#Finds the eigenspectrum
 counter = 0
 sum = np.zeros(shape=(10,10))
 while counter < len(galaxies):
@@ -162,6 +168,7 @@ print "plot: check picture 1"
 plot.plot(eig_value)
 plot.show()
 
+#Finds how many components are necessary to fill 90%
 eig_value_sum = 0
 counter3 = 0
 while counter3 < len(eig_value):
@@ -182,9 +189,16 @@ print ""
 print "amount of components for minimum 90%:", amount
 print ""
 print "scatter plot for the first two components: check picture 2"
+
+#Making the scatter plot of the first two components
 plot.plot([1,2],[eig_value[0],eig_value[1]], 'ro')
 plot.axis([0.5,2.5,200,500])
 plot.show()
+
+print ""
+print "Opgave 2.3"
+#Opgave 2.3
+
 
 # close cursor, connection to database
 cursor.close()
